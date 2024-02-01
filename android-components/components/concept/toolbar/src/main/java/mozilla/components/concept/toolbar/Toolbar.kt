@@ -184,6 +184,19 @@ interface Toolbar {
     fun showMenuButton()
 
     /**
+     * Sets the end-bound limit for PageActions in display mode.
+     *
+     * @param hasEndBound [Boolean] flag showing if the display mode has end-bound items.
+     * @param endBoundCount [Int] num of end-bound items in the display mode.
+     */
+    fun setDisplayPageActionEndBoundLimit(hasEndBound: Boolean, endBoundCount: Int,)
+
+    /**
+     * Adds end-bound item to this container at the end of the list.
+     */
+    fun addEndBoundItemToDisplay(action: Action)
+
+    /**
      * Casts this toolbar to an Android View object.
      */
     fun asView(): View = this as View

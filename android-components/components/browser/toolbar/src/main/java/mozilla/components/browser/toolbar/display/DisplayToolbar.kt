@@ -662,6 +662,23 @@ class DisplayToolbar internal constructor(
     internal fun showMenuButton() {
         views.menu.setShouldBeHidden(false)
     }
+
+    /**
+     * Sets the end-bound limit for PageActions in display mode.
+     *
+     * @param hasEndBound [Boolean] flag showing if the display mode has end-bound items.
+     * @param endBoundCount [Int] num of end-bound items in the display mode.
+     */
+    internal fun setDisplayPageActionEndBoundLimit(hasEndBound: Boolean, endBoundCount: Int,) {
+        views.pageActions.setEndBoundLimit(hasEndBound, endBoundCount)
+    }
+
+    /**
+     * Adds end-bound item to the PageActions in display mode.
+     */
+    internal fun addEndBoundItemToDisplay(action: Toolbar.Action) {
+        views.pageActions.addEndBoundItem(action)
+    }
 }
 
 /**

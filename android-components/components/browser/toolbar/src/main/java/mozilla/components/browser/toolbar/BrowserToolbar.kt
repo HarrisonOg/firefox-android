@@ -350,6 +350,23 @@ class BrowserToolbar @JvmOverloads constructor(
     }
 
     /**
+     * Sets the end-bound limit for PageActions in display mode.
+     *
+     * @param hasEndBound [Boolean] flag showing if the display mode has end-bound items.
+     * @param endBoundCount [Int] num of end-bound items in the display mode.
+     */
+    override fun setDisplayPageActionEndBoundLimit(hasEndBound: Boolean, endBoundCount: Int,) {
+        display.setDisplayPageActionEndBoundLimit(hasEndBound, endBoundCount)
+    }
+
+    /**
+     * Adds end-bound item to the PageActions in display mode.
+     */
+    override fun addEndBoundItemToDisplay(action: Toolbar.Action) {
+        display.addEndBoundItemToDisplay(action)
+    }
+
+    /**
      * Switches to URL editing mode.
      *
      * @param cursorPlacement Where the cursor should be placed after focusing on the URL input field.

@@ -24,6 +24,9 @@ internal class ActionContainer @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
     private val actions = mutableListOf<ActionWrapper>()
     private var actionSize: Int? = null
+    private var hasEndBoundActions: Boolean = false
+    private var endBoundActionCount: Int = 0
+    private var endBoundIndex: Int = -1  //Tracks the index before the end-bound items.
 
     init {
         gravity = Gravity.CENTER_VERTICAL
@@ -44,6 +47,10 @@ internal class ActionContainer @JvmOverloads constructor(
         }
     }
 
+    /**
+     * Adds an action to the end of the list of actions unless [hasEndBoundActions] is true.
+     * If [hasEndBoundActions], then adds the action at the index right before the end-bound items.
+     */
     fun addAction(action: Toolbar.Action) {
         val wrapper = ActionWrapper(action)
 
@@ -56,11 +63,33 @@ internal class ActionContainer @JvmOverloads constructor(
             }
         }
 
-        actions.add(wrapper)
+        if (endBoundIndex >= 0) {
+            actions.add(endBoundIndex, item)
+            endBoundIndex++
+        } else {
+            actions.add(wrapper)
+        }
     }
 
+    /**
+     *
+     */
     fun removeAction(action: Toolbar.Action) {
         actions.find { it.actual == action }?.let {
+            if (endBoundIndex >= 0) {  //There are end-bound items to deal with
+                if (actions.indexOf(it) < endBoundIndex ) {
+                    //removing normal item
+                    endBoundIndex--
+                } else if(actions.indexOf(it) == endBoundIndex && (actions.size - 1) == endBoundIndex) {
+                    //removing last end-bound item
+                    //reset the endbound index to -1
+                    endBoundIndex = -1
+                } else {
+                    //no-op
+                    //removing one of multiple end-bound items
+                    //no movement of endBoundIndex is needed
+                }
+            }
             actions.remove(it)
             removeView(it.view)
         }
@@ -106,5 +135,40 @@ internal class ActionContainer @JvmOverloads constructor(
 
     private fun addActionView(view: View) {
         addView(view, LayoutParams(actionSize ?: 0, actionSize ?: 0))
+    }
+
+    /**
+     * Set this [ActionContainer] to have [ActionWrapper]s that are bound to the end
+     * of the container (end-bound items) and the count of [ActionWrapper]s bound to the end.
+     *
+     * @param hasEndBound [Boolean] flag showing if the container has end-bound items.
+     * @param endBoundCount [Int] num of end-bound items.
+     */
+    fun setEndBoundLimit(hasEndBound: Boolean, endBoundCount: Int,) {
+       hasEndBoundActions = hasEndBound
+       endBoundActionCount = endBoundCount
+    }
+
+    /**
+     * Adds end-bound item to this container at the end of the list.
+      */
+    fun addEndBoundItem(action: Toolbar.Action) {
+        val wrapper = ActionWrapper(action)
+
+        if (action.visible()) {
+            visibility = View.VISIBLE
+
+            action.createView(this).let {
+                wrapper.view = it
+                addActionView(it)
+            }
+        }
+
+        //new endBoundItems are added at the end of the list
+        actions.add(wrapper)
+        if (endBoundIndex < 0) {
+            //if there are no end-bound items, this is the first one add the index.
+            endBoundIndex = actions.indexOf(wrapper)
+        }
     }
 }
